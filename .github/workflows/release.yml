@@ -1,0 +1,161 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+            target: template_debug
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+            target: template_release
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_32
+            target: template_debug
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_32
+            target: template_release
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            target: template_debug
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            target: template_release
+          - os: windows-latest
+            platform: windows
+            arch: x86_64
+            target: template_debug
+          - os: windows-latest
+            platform: windows
+            arch: x86_64
+            target: template_release
+          - os: windows-latest
+            platform: windows
+            arch: x86_32
+            target: template_debug
+          - os: windows-latest
+            platform: windows
+            arch: x86_32
+            target: template_release
+          - os: macos-latest
+            platform: macos
+            arch: universal
+            target: template_debug
+          - os: macos-latest
+            platform: macos
+            arch: universal
+            target: template_release
+          - os: ubuntu-latest
+            platform: android
+            arch: arm64
+            target: template_debug
+          - os: ubuntu-latest
+            platform: android
+            arch: arm64
+            target: template_release
+          - os: ubuntu-latest
+            platform: android
+            arch: x86_64
+            target: template_debug
+          - os: ubuntu-latest
+            platform: android
+            arch: x86_64
+            target: template_release
+          - os: ubuntu-latest
+            platform: web
+            arch: wasm32
+            target: template_debug
+          - os: ubuntu-latest
+            platform: web
+            arch: wasm32
+            target: template_release
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install SCons
+        run: python -m pip install scons
+
+      - name: Install dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          if [ "${{ matrix.arch }}" = "x86_32" ]; then
+            sudo apt-get install -y g++-multilib
+          elif [ "${{ matrix.arch }}" = "arm64" ]; then
+            sudo apt-get install -y g++-aarch64-linux-gnu
+          fi
+
+      - name: Setup Emscripten
+        if: matrix.platform == 'web'
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Setup Android NDK
+        if: matrix.platform == 'android'
+        run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;23.2.8568313"
+
+      - name: Build
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" = "linux" ] && [ "${{ matrix.arch }}" = "arm64" ]; then
+            export CC=aarch64-linux-gnu-gcc
+            export CXX=aarch64-linux-gnu-g++
+          fi
+          scons platform=${{ matrix.platform }} target=${{ matrix.target }} arch=${{ matrix.arch }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ed25519-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.target }}
+          path: project/addons/ed25519/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Asset
+        run: |
+          mkdir -p release/addons/ed25519
+          cp -r artifacts/*/* release/addons/ed25519/ || true
+          cp project/addons/ed25519/ed25519.gdextension release/addons/ed25519/
+          cd release
+          zip -r ed25519.zip addons/
+          mv ed25519.zip ../
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ed25519.zip
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

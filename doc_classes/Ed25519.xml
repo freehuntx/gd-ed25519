@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Ed25519" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ed25519 digital signatures and X25519 authenticated encryption using Monocypher.
+	</brief_description>
+	<description>
+		Provides Ed25519 key generation, signing, and verification, as well as X25519 authenticated public-key encryption (XChaCha20-Poly1305). All cryptographic operations are powered by the Monocypher library. Keys are 32-byte [PackedByteArray]s, signatures are 64 bytes, and encrypted output is prefixed with a 24-byte nonce and 16-byte MAC.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_keypair">
+			<return type="Ed25519Keypair" />
+			<description>
+				Generates a new Ed25519 keypair using cryptographically secure random bytes from [method OS.get_entropy]. Returns an [Ed25519Keypair] object containing the public and private keys. The private key is the raw 32-byte seed.
+			</description>
+		</method>
+		<method name="sign">
+			<return type="PackedByteArray" />
+			<param index="0" name="message" type="PackedByteArray" />
+			<param index="1" name="private_key" type="PackedByteArray" />
+			<param index="2" name="public_key" type="PackedByteArray" />
+			<description>
+				Signs [param message] using the given Ed25519 [param private_key] (32-byte seed) and [param public_key]. Returns a 64-byte [PackedByteArray] signature, or an empty array if key sizes are invalid.
+			</description>
+		</method>
+		<method name="verify">
+			<return type="bool" />
+			<param index="0" name="signature" type="PackedByteArray" />
+			<param index="1" name="message" type="PackedByteArray" />
+			<param index="2" name="public_key" type="PackedByteArray" />
+			<description>
+				Verifies an Ed25519 [param signature] against [param message] using the signer's [param public_key]. Returns [code]true[/code] if the signature is valid, [code]false[/code] otherwise or if the signature/key sizes are incorrect.
+			</description>
+		</method>
+		<method name="encrypt">
+			<return type="PackedByteArray" />
+			<param index="0" name="message" type="PackedByteArray" />
+			<param index="1" name="their_public_key" type="PackedByteArray" />
+			<param index="2" name="my_private_key" type="PackedByteArray" />
+			<description>
+				Encrypts [param message] for the owner of [param their_public_key] using [param my_private_key]. Internally converts Ed25519 keys to X25519, performs a Diffie-Hellman key exchange, and encrypts with XChaCha20-Poly1305 (AEAD). Returns a [PackedByteArray] containing [code]nonce (24 bytes) + MAC (16 bytes) + ciphertext[/code], or an empty array on invalid key sizes.
+			</description>
+		</method>
+		<method name="decrypt">
+			<return type="PackedByteArray" />
+			<param index="0" name="encrypted_data" type="PackedByteArray" />
+			<param index="1" name="their_public_key" type="PackedByteArray" />
+			<param index="2" name="my_private_key" type="PackedByteArray" />
+			<description>
+				Decrypts [param encrypted_data] (as produced by [method encrypt]) from the owner of [param their_public_key] using [param my_private_key]. Verifies the MAC before returning the plaintext. Returns the decrypted [PackedByteArray], or an empty array if decryption/authentication fails or input sizes are invalid.
+			</description>
+		</method>
+	</methods>
+</class>

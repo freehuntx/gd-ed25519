@@ -1,0 +1,25 @@
+[configuration]
+
+entry_symbol = "ed25519_library_init"
+compatibility_minimum = 4.4
+
+[libraries]
+
+android.debug.arm64 = "res://addons/ed25519/androidarm64/ed25519.android.template_debug.arm64.so"
+android.release.arm64 = "res://addons/ed25519/androidarm64/ed25519.android.template_release.arm64.so"
+android.debug.x86_64 = "res://addons/ed25519/androidx64/ed25519.android.template_debug.x86_64.so"
+android.release.x86_64 = "res://addons/ed25519/androidx64/ed25519.android.template_release.x86_64.so"
+linux.debug.arm64 = "res://addons/ed25519/linuxarm64/ed25519.linux.template_debug.arm64.so"
+linux.release.arm64 = "res://addons/ed25519/linuxarm64/ed25519.linux.template_release.arm64.so"
+linux.debug.x86_64 = "res://addons/ed25519/linux64/ed25519.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/ed25519/linux64/ed25519.linux.template_release.x86_64.so"
+linux.debug.x86_32 = "res://addons/ed25519/linux32/ed25519.linux.template_debug.x86_32.so"
+linux.release.x86_32 = "res://addons/ed25519/linux32/ed25519.linux.template_release.x86_32.so"
+macos.debug = "res://addons/ed25519/osx/ed25519.macos.template_debug.universal.dylib"
+macos.release = "res://addons/ed25519/osx/ed25519.macos.template_release.universal.dylib"
+windows.debug.x86_64 = "res://addons/ed25519/win64/ed25519.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/ed25519/win64/ed25519.windows.template_release.x86_64.dll"
+windows.debug.x86_32 = "res://addons/ed25519/win32/ed25519.windows.template_debug.x86_32.dll"
+windows.release.x86_32 = "res://addons/ed25519/win32/ed25519.windows.template_release.x86_32.dll"
+web.debug.wasm32 = "res://addons/ed25519/web/ed25519.web.template_debug.wasm32.wasm"
+web.release.wasm32 = "res://addons/ed25519/web/ed25519.web.template_release.wasm32.wasm"

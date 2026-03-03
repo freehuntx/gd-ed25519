@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Ed25519Keypair" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A container for Ed25519 key pairs.
+	</brief_description>
+	<description>
+		This class holds an Ed25519 public and private key pair. It is typically returned by [method Ed25519.generate_keypair].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_private_key" qualifiers="const">
+			<return type="PackedByteArray" />
+			<description>
+				Returns the 32-byte private key (seed).
+			</description>
+		</method>
+		<method name="get_public_key" qualifiers="const">
+			<return type="PackedByteArray" />
+			<description>
+				Returns the 32-byte public key.
+			</description>
+		</method>
+		<method name="set_private_key">
+			<return type="void" />
+			<param index="0" name="private_key" type="PackedByteArray" />
+			<description>
+				Sets the private key.
+			</description>
+		</method>
+		<method name="set_public_key">
+			<return type="void" />
+			<param index="0" name="public_key" type="PackedByteArray" />
+			<description>
+				Sets the public key.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="private_key" type="PackedByteArray" setter="set_private_key" getter="get_private_key" default="PackedByteArray()">
+			The 32-byte private key (seed).
+		</member>
+		<member name="public_key" type="PackedByteArray" setter="set_public_key" getter="get_public_key" default="PackedByteArray()">
+			The 32-byte public key.
+		</member>
+	</members>
+</class>

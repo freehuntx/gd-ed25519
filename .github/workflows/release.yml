@@ -159,3 +159,78 @@ jobs:
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-release-branch:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Update Release Branch
+        run: |
+          mkdir -p release_tmp/addons/ed25519
+
+          # Copy source files
+          for artifact in artifacts/*; do
+            cp -rf "$artifact"/* release_tmp/addons/ed25519/
+          done
+
+          cp project/addons/ed25519/ed25519.gdextension release_tmp/addons/ed25519/
+          cp README.md release_tmp/
+          cp LICENSE.md release_tmp/
+          cp .gitignore release_tmp/
+
+          # Allow binaries in release branch
+          sed -i '/\*\.so/d' release_tmp/.gitignore
+          sed -i '/\*\.dylib/d' release_tmp/.gitignore
+          sed -i '/\*\.dll/d' release_tmp/.gitignore
+          sed -i '/\*\.wasm/d' release_tmp/.gitignore
+
+          rm -rf ../release
+          mv release_tmp ../release
+
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Fetch all branches
+          git fetch origin
+
+          # Check if release branch exists remotely
+          if git ls-remote --exit-code --heads origin release; then
+            echo "Switching to existing release branch"
+            git checkout -B release origin/release
+          else
+            echo "Creating orphan release branch"
+            git checkout --orphan release
+          fi
+
+          # Clean working directory to remove tracked and untracked files
+          # Only run git rm if there are files tracked
+          if [ -n "$(git ls-files)" ]; then
+            git rm -rf .
+          fi
+          git clean -fdx
+
+          # Restore release content
+          cp -r ../release/* ./
+          # Handle hidden files if any (like .gitignore)
+          cp -r ../release/.* ./ || true
+
+          # Add all files
+          git add .
+
+          # Commit and Push if there are changes
+          if ! git diff-index --quiet HEAD --; then
+             git commit -m "Release ${GITHUB_REF_NAME}"
+             git push origin release
+          else
+             echo "No changes to commit"
+          fi

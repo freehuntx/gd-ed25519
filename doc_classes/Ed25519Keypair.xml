@@ -4,11 +4,18 @@
 		A container for Ed25519 key pairs.
 	</brief_description>
 	<description>
-		This class holds an Ed25519 public and private key pair. It is typically returned by [method Ed25519.generate_keypair].
+		This class holds an Ed25519 public and private key pair. It is typically returned by [method Ed25519.generate_keypair] or [method from_private_key].
 	</description>
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="from_private_key" qualifiers="static">
+			<return type="Ed25519Keypair" />
+			<param index="0" name="private_key" type="PackedByteArray" />
+			<description>
+				Creates and returns a new [Ed25519Keypair] from an existing 32-byte private key (seed). Returns an empty keypair if the provided key size is invalid.
+			</description>
+		</method>
 		<method name="get_private_key" qualifiers="const">
 			<return type="PackedByteArray" />
 			<description>

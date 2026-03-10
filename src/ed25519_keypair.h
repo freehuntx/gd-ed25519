@@ -22,6 +22,7 @@ namespace godot
     Ed25519Keypair();
     ~Ed25519Keypair();
 
+    static Ref<Ed25519Keypair> generate();
     static Ref<Ed25519Keypair> from_private_key(const PackedByteArray &p_private_key);
 
     void set_private_key(const PackedByteArray &p_key);

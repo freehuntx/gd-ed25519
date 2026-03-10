@@ -21,16 +21,13 @@ namespace godot
     Ed25519();
     ~Ed25519();
 
-    // Key Generation
-    Ref<Ed25519Keypair> generate_keypair();
-
     // Ed25519 Signatures
-    PackedByteArray sign(const PackedByteArray &message, const PackedByteArray &private_key, const PackedByteArray &public_key);
-    bool verify(const PackedByteArray &signature, const PackedByteArray &message, const PackedByteArray &public_key);
+    static PackedByteArray sign(const PackedByteArray &message, const PackedByteArray &private_key, const PackedByteArray &public_key);
+    static bool verify(const PackedByteArray &signature, const PackedByteArray &message, const PackedByteArray &public_key);
 
     // X25519 Encryption (Authenticated Public-Key Encryption)
-    PackedByteArray encrypt(const PackedByteArray &message, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
-    PackedByteArray decrypt(const PackedByteArray &encrypted_data, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
+    static PackedByteArray encrypt(const PackedByteArray &message, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
+    static PackedByteArray decrypt(const PackedByteArray &encrypted_data, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
   };
 
 } // namespace godot

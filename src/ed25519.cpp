@@ -9,68 +9,15 @@ using namespace godot;
 
 void Ed25519::_bind_methods()
 {
-  ClassDB::bind_method(D_METHOD("generate_keypair"), &Ed25519::generate_keypair);
-  ClassDB::bind_method(D_METHOD("sign", "message", "private_key", "public_key"), &Ed25519::sign);
-  ClassDB::bind_method(D_METHOD("verify", "signature", "message", "public_key"), &Ed25519::verify);
-  ClassDB::bind_method(D_METHOD("encrypt", "message", "their_public_key", "my_private_key"), &Ed25519::encrypt);
-  ClassDB::bind_method(D_METHOD("decrypt", "encrypted_data", "their_public_key", "my_private_key"), &Ed25519::decrypt);
+  ClassDB::bind_static_method("Ed25519", D_METHOD("sign", "message", "private_key", "public_key"), &Ed25519::sign);
+  ClassDB::bind_static_method("Ed25519", D_METHOD("verify", "signature", "message", "public_key"), &Ed25519::verify);
+  ClassDB::bind_static_method("Ed25519", D_METHOD("encrypt", "message", "their_public_key", "my_private_key"), &Ed25519::encrypt);
+  ClassDB::bind_static_method("Ed25519", D_METHOD("decrypt", "encrypted_data", "their_public_key", "my_private_key"), &Ed25519::decrypt);
 }
 
 Ed25519::Ed25519() {}
 
 Ed25519::~Ed25519() {}
-
-Ref<Ed25519Keypair> Ed25519::generate_keypair()
-{
-  Ref<Ed25519Keypair> result;
-  result.instantiate();
-
-  // Generate 32 bytes of random data for the private key
-  PackedByteArray private_key;
-  private_key.resize(32);
-
-  // Use Godot's OS class to get cryptographically secure random bytes if possible
-  // For simplicity and cross-platform compatibility in this example, we'll use RandomNumberGenerator
-  // In a production environment, you might want to use OS::get_singleton()->get_entropy() if available
-  // or a dedicated CSPRNG.
-
-  // Note: Godot 4.x OS::get_entropy is the proper way to get secure random bytes
-  PackedByteArray entropy = OS::get_singleton()->get_entropy(32);
-  if (entropy.size() == 32)
-  {
-    private_key = entropy;
-  }
-  else
-  {
-    // Fallback (not cryptographically secure, but prevents crashing if get_entropy fails)
-    Ref<RandomNumberGenerator> rng;
-    rng.instantiate();
-    rng->randomize();
-    for (int i = 0; i < 32; ++i)
-    {
-      private_key[i] = rng->randi() % 256;
-    }
-  }
-
-  PackedByteArray public_key;
-  public_key.resize(32);
-
-  // crypto_eddsa_key_pair securely wipes the input seed, so we give it a copy
-  uint8_t seed_copy[32];
-  for (int i = 0; i < 32; i++)
-  {
-    seed_copy[i] = private_key[i];
-  }
-
-  uint8_t secret_key[64];
-  crypto_eddsa_key_pair(secret_key, public_key.ptrw(), seed_copy);
-
-  // Return the original 32-byte seed as the private key
-  result->set_private_key(private_key);
-  result->set_public_key(public_key);
-
-  return result;
-}
 
 PackedByteArray Ed25519::sign(const PackedByteArray &message, const PackedByteArray &private_key, const PackedByteArray &public_key)
 {

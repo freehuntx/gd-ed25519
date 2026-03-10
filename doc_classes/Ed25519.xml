@@ -9,13 +9,7 @@
 	<tutorials>
 	</tutorials>
 	<methods>
-		<method name="generate_keypair">
-			<return type="Ed25519Keypair" />
-			<description>
-				Generates a new Ed25519 keypair using cryptographically secure random bytes from [method OS.get_entropy]. Returns an [Ed25519Keypair] object containing the public and private keys. The private key is the raw 32-byte seed.
-			</description>
-		</method>
-		<method name="sign">
+		<method name="sign" qualifiers="static">
 			<return type="PackedByteArray" />
 			<param index="0" name="message" type="PackedByteArray" />
 			<param index="1" name="private_key" type="PackedByteArray" />
@@ -24,7 +18,7 @@
 				Signs [param message] using the given Ed25519 [param private_key] (32-byte seed) and [param public_key]. Returns a 64-byte [PackedByteArray] signature, or an empty array if key sizes are invalid.
 			</description>
 		</method>
-		<method name="verify">
+		<method name="verify" qualifiers="static">
 			<return type="bool" />
 			<param index="0" name="signature" type="PackedByteArray" />
 			<param index="1" name="message" type="PackedByteArray" />
@@ -33,7 +27,7 @@
 				Verifies an Ed25519 [param signature] against [param message] using the signer's [param public_key]. Returns [code]true[/code] if the signature is valid, [code]false[/code] otherwise or if the signature/key sizes are incorrect.
 			</description>
 		</method>
-		<method name="encrypt">
+		<method name="encrypt" qualifiers="static">
 			<return type="PackedByteArray" />
 			<param index="0" name="message" type="PackedByteArray" />
 			<param index="1" name="their_public_key" type="PackedByteArray" />
@@ -42,7 +36,7 @@
 				Encrypts [param message] for the owner of [param their_public_key] using [param my_private_key]. Internally converts Ed25519 keys to X25519, performs a Diffie-Hellman key exchange, and encrypts with XChaCha20-Poly1305 (AEAD). Returns a [PackedByteArray] containing [code]nonce (24 bytes) + MAC (16 bytes) + ciphertext[/code], or an empty array on invalid key sizes.
 			</description>
 		</method>
-		<method name="decrypt">
+		<method name="decrypt" qualifiers="static">
 			<return type="PackedByteArray" />
 			<param index="0" name="encrypted_data" type="PackedByteArray" />
 			<param index="1" name="their_public_key" type="PackedByteArray" />

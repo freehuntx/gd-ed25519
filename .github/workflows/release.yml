@@ -187,6 +187,17 @@ jobs:
           cp LICENSE.md release_tmp/
           cp .gitignore release_tmp/
 
+          # Add .gitattributes to ensure valid AssetLib structure in release branch
+          cat <<EOF > release_tmp/.gitattributes
+          # Normalize line endings for all files that Git considers text files.
+          * text=auto eol=lf
+
+          # Only include the addons folder when downloading from the Asset Library.
+          /**        export-ignore
+          /addons    !export-ignore
+          /addons/** !export-ignore
+          EOF
+
           # Allow binaries in release branch
           sed -i '/\*\.so/d' release_tmp/.gitignore
           sed -i '/\*\.dylib/d' release_tmp/.gitignore

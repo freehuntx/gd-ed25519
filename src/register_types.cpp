@@ -2,6 +2,8 @@
 
 #include "ed25519.h"
 #include "ed25519_keypair.h"
+#include <ed25519sha512.h>
+#include <ed25519sha512_keypair.h>
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -18,6 +20,8 @@ void initialize_ed25519_module(ModuleInitializationLevel p_level)
 
   ClassDB::register_class<Ed25519>();
   ClassDB::register_class<Ed25519Keypair>();
+  ClassDB::register_class<Ed25519SHA512>();
+  ClassDB::register_class<Ed25519SHA512Keypair>();
 }
 
 void uninitialize_ed25519_module(ModuleInitializationLevel p_level)

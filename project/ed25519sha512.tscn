@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cotsacjun2gj2"]
+
+[ext_resource type="Script" uid="uid://37rv3dxleh5s" path="res://ed25519sha512.gd" id="1_cq2li"]
+
+[node name="Ed25519Sha512" type="Node" unique_id=1551850145]
+script = ExtResource("1_cq2li")

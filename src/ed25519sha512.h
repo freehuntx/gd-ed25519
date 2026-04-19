@@ -1,0 +1,30 @@
+#ifndef GDED25519_512_H
+#define GDED25519_512_H
+
+#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
+
+namespace godot {
+
+    class Ed25519SHA512: public RefCounted {
+        GDCLASS(Ed25519SHA512, RefCounted)
+
+        protected:
+            static void _bind_methods();
+
+        public:
+            Ed25519SHA512();
+            ~Ed25519SHA512();
+
+            // Ed25519 Signatures
+            static PackedByteArray sign(const PackedByteArray &message, const PackedByteArray &private_key, const PackedByteArray &public_key);
+            static bool verify(const PackedByteArray &signature, const PackedByteArray &message, const PackedByteArray &public_key);
+
+            // X25519 Encryption (Authenticated Public-Key Encryption)
+            static PackedByteArray encrypt(const PackedByteArray &message, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
+            static PackedByteArray decrypt(const PackedByteArray &encrypted_data, const PackedByteArray &their_public_key, const PackedByteArray &my_private_key);
+    };
+}
+
+#endif // GDED25519_512_H

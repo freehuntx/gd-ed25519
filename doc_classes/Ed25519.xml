@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Ed25519" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
-		Ed25519 digital signatures and X25519 authenticated encryption using Monocypher.
+		RFC 8032 Ed25519 digital signatures and a legacy X25519 authenticated public-key encryption helper, backed by Monocypher.
 	</brief_description>
 	<description>
-		Provides Ed25519 key generation, signing, and verification, as well as X25519 authenticated public-key encryption (XChaCha20-Poly1305). All cryptographic operations are powered by the Monocypher library. Keys are 32-byte [PackedByteArray]s, signatures are 64 bytes, and encrypted output is prefixed with a 24-byte nonce and 16-byte MAC.
+		Provides Ed25519 (RFC 8032, SHA-512) signing and verification, interoperable with libsodium, WebCrypto and @noble/ed25519. Also exposes a legacy [method encrypt]/[method decrypt] pair performing Ed25519-to-X25519 key conversion plus XChaCha20-Poly1305 authenticated public-key encryption; new code should prefer a [X25519] handshake followed by [Monocypher] AEAD instead. All cryptographic operations are powered by the vendored Monocypher library. Keys are 32-byte [PackedByteArray]s and signatures are 64 bytes.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -15,7 +15,7 @@
 			<param index="1" name="private_key" type="PackedByteArray" />
 			<param index="2" name="public_key" type="PackedByteArray" />
 			<description>
-				Signs [param message] using the given Ed25519 [param private_key] (32-byte seed) and [param public_key]. Returns a 64-byte [PackedByteArray] signature, or an empty array if key sizes are invalid.
+				Signs [param message] with the RFC 8032 Ed25519 key whose 32-byte seed is [param private_key]. The public key is derived from the seed internally and bound to it (this prevents a key-extraction attack where signing the same seed with a mismatched public key leaks the private scalar). [param public_key] is optional: pass an empty [PackedByteArray] to have it derived, or pass the 32-byte public key to have it checked - a mismatch causes an error and an empty signature (fail-fast on caller bugs). Returns a 64-byte [PackedByteArray] signature, or an empty [PackedByteArray] (with an error) on a bad [param private_key] size, a mismatched [param public_key], or any other error.
 			</description>
 		</method>
 		<method name="verify" qualifiers="static">
@@ -24,7 +24,7 @@
 			<param index="1" name="message" type="PackedByteArray" />
 			<param index="2" name="public_key" type="PackedByteArray" />
 			<description>
-				Verifies an Ed25519 [param signature] against [param message] using the signer's [param public_key]. Returns [code]true[/code] if the signature is valid, [code]false[/code] otherwise or if the signature/key sizes are incorrect.
+				Verifies a 64-byte Ed25519 [param signature] against [param message] using [param public_key]. Returns [code]true[/code] if valid, [code]false[/code] otherwise (including size mismatches).
 			</description>
 		</method>
 		<method name="encrypt" qualifiers="static">
@@ -33,7 +33,7 @@
 			<param index="1" name="their_public_key" type="PackedByteArray" />
 			<param index="2" name="my_private_key" type="PackedByteArray" />
 			<description>
-				Encrypts [param message] for the owner of [param their_public_key] using [param my_private_key]. Internally converts Ed25519 keys to X25519, performs a Diffie-Hellman key exchange, and encrypts with XChaCha20-Poly1305 (AEAD). Returns a [PackedByteArray] containing [code]nonce (24 bytes) + MAC (16 bytes) + ciphertext[/code], or an empty array on invalid key sizes.
+				[b]Deprecated legacy helper.[/b] Encrypts [param message] for the owner of [param their_public_key] using [param my_private_key] (32-byte Ed25519 seed). Internally derives an X25519 scalar from the seed (SHA-512, RFC 8032 / libsodium compatible), converts the public keys to Curve25519, performs Diffie-Hellman, and encrypts with XChaCha20-Poly1305. Returns [code]nonce (24 bytes) + MAC (16 bytes) + ciphertext[/code], or an empty array on invalid key sizes or CSPRNG failure. Prefer a [X25519] handshake + [Monocypher] AEAD for new code.
 			</description>
 		</method>
 		<method name="decrypt" qualifiers="static">
@@ -42,7 +42,7 @@
 			<param index="1" name="their_public_key" type="PackedByteArray" />
 			<param index="2" name="my_private_key" type="PackedByteArray" />
 			<description>
-				Decrypts [param encrypted_data] (as produced by [method encrypt]) from the owner of [param their_public_key] using [param my_private_key]. Verifies the MAC before returning the plaintext. Returns the decrypted [PackedByteArray], or an empty array if decryption/authentication fails or input sizes are invalid.
+				[b]Deprecated legacy helper.[/b] Decrypts [param encrypted_data] (as produced by [method encrypt]) from the owner of [param their_public_key] using [param my_private_key]. Verifies the MAC before returning plaintext. Returns the decrypted [PackedByteArray], or an empty array if authentication fails or inputs are invalid.
 			</description>
 		</method>
 	</methods>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="Ed25519Keypair" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
-		A container for Ed25519 key pairs.
+		A container for an RFC 8032 Ed25519 keypair, keyed by its 32-byte seed.
 	</brief_description>
 	<description>
-		This class holds an Ed25519 public and private key pair. It is typically returned by [method generate] or [method from_private_key].
+		Holds an Ed25519 (RFC 8032, SHA-512) keypair. The canonical private-key representation is the 32-byte [i]seed[/i] (RFC 8032 terminology). The public key is derived from it. [b]Note on terminology:[/b] in this addon "private key" / "seed" both refer to the 32-byte seed; libsodium and others call the 64-byte [code]seed || public_key[/code] value the "secret key". The seed is wiped from memory when the object is destroyed.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -12,20 +12,27 @@
 		<method name="generate" qualifiers="static">
 			<return type="Ed25519Keypair" />
 			<description>
-				Generates a new Ed25519 keypair using cryptographically secure random bytes from [method OS.get_entropy]. Returns an [Ed25519Keypair] object containing the public and private keys. The private key is the raw 32-byte seed.
+				Generates a new Ed25519 keypair using the platform CSPRNG. The private key (seed) is a fresh 32 random bytes; the public key is derived from it. Returns null and pushes an error if the CSPRNG fails.
+			</description>
+		</method>
+		<method name="from_seed" qualifiers="static">
+			<return type="Ed25519Keypair" />
+			<param index="0" name="seed" type="PackedByteArray" />
+			<description>
+				Reconstructs an Ed25519 keypair deterministically from a 32-byte [param seed] (same seed always yields the same public key and signatures). Also accepts a 64-byte input, treated as a libsodium secret key, of which the first 32 bytes are taken as the seed. Returns null and pushes an error for any other length.
 			</description>
 		</method>
 		<method name="from_private_key" qualifiers="static">
 			<return type="Ed25519Keypair" />
 			<param index="0" name="private_key" type="PackedByteArray" />
 			<description>
-				Creates and returns a new [Ed25519Keypair] from an existing 32-byte private key (seed). Returns an empty keypair if the provided key size is invalid.
+				[b]Deprecated,[/b] alias for [method from_seed]. Kept for backward compatibility; new code should use [method from_seed].
 			</description>
 		</method>
-		<method name="get_private_key" qualifiers="const">
+		<method name="get_seed" qualifiers="const">
 			<return type="PackedByteArray" />
 			<description>
-				Returns the 32-byte private key (seed).
+				Returns a copy of the 32-byte seed.
 			</description>
 		</method>
 		<method name="get_public_key" qualifiers="const">
@@ -34,11 +41,17 @@
 				Returns the 32-byte public key.
 			</description>
 		</method>
+		<method name="get_private_key" qualifiers="const">
+			<return type="PackedByteArray" />
+			<description>
+				[b]Deprecated,[/b] alias for [method get_seed]. Returns the 32-byte seed.
+			</description>
+		</method>
 		<method name="set_private_key">
 			<return type="void" />
 			<param index="0" name="private_key" type="PackedByteArray" />
 			<description>
-				Sets the private key.
+				[b]Deprecated,[/b] stores the seed only (does not re-derive the public key). Prefer [method from_seed].
 			</description>
 		</method>
 		<method name="set_public_key">
@@ -50,11 +63,11 @@
 		</method>
 	</methods>
 	<members>
-		<member name="private_key" type="PackedByteArray" setter="set_private_key" getter="get_private_key" default="PackedByteArray()">
-			The 32-byte private key (seed).
-		</member>
 		<member name="public_key" type="PackedByteArray" setter="set_public_key" getter="get_public_key" default="PackedByteArray()">
 			The 32-byte public key.
+		</member>
+		<member name="private_key" type="PackedByteArray" setter="set_private_key" getter="get_private_key" default="PackedByteArray()">
+			[b]Deprecated,[/b] alias for the 32-byte seed.
 		</member>
 	</members>
 </class>

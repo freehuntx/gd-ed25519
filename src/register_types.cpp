@@ -2,6 +2,9 @@
 
 #include "ed25519.h"
 #include "ed25519_keypair.h"
+#include "x25519.h"
+#include "x25519_keypair.h"
+#include "monocypher_class.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -18,6 +21,9 @@ void initialize_ed25519_module(ModuleInitializationLevel p_level)
 
   ClassDB::register_class<Ed25519>();
   ClassDB::register_class<Ed25519Keypair>();
+  ClassDB::register_class<X25519>();
+  ClassDB::register_class<X25519Keypair>();
+  ClassDB::register_class<Monocypher>();
 }
 
 void uninitialize_ed25519_module(ModuleInitializationLevel p_level)

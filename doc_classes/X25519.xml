@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class name="X25519" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Pure X25519 (RFC 7748) ephemeral key agreement primitives.
+	</brief_description>
+	<description>
+		Provides fresh ephemeral X25519 (Curve25519) keypair generation and raw Diffie-Hellman. These keys are independent from Ed25519 keys; this addon never converts between the two. Intended for ephemeral key agreement. The shared secret returned by [method shared_secret] is [b]raw and unhashed[/b] - never use it directly as a cipher key; feed it through a KDF (e.g. [Monocypher.blake2b] with a domain-separation string) at the protocol layer.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_keypair" qualifiers="static">
+			<return type="X25519Keypair" />
+			<description>
+				Generates a fresh ephemeral X25519 keypair. The private key is 32 random bytes from the platform CSPRNG; the public key is [code]crypto_x25519_public_key(sk)[/code]. Clamping is performed inside the underlying primitive. Returns null and pushes an error if the CSPRNG fails.
+			</description>
+		</method>
+		<method name="shared_secret" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="own_private" type="PackedByteArray" />
+			<param index="1" name="their_public" type="PackedByteArray" />
+			<description>
+				Computes the raw RFC 7748 Diffie-Hellman shared secret from a 32-byte [param own_private] scalar and a 32-byte [param their_public] u-coordinate. Returns the 32-byte shared secret as a [PackedByteArray], or null if the result is all-zero (low-order point - must abort) or the inputs are not 32 bytes. The zero check is constant time. Do not use the raw secret directly as a cipher key.
+			</description>
+		</method>
+	</methods>
+</class>

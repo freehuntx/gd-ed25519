@@ -682,7 +682,7 @@ static void  xor_block(blk *o,const blk*in){FOR(i, 0, 128) o->a[i] ^= in->a[i];}
 // Doesn't extract more entropy than the base hash function.
 // Mainly used for filling a whole kilobyte block with pseudo-random bytes.
 // (One could use a stream cipher with a seed hash as the key, but
-//  this would introduce another dependency —and point of failure.)
+//  this would introduce another dependency -and point of failure.)  // [VENDOR-PATCH] em-dash -> ASCII hyphen to avoid MSVC C4819 (codepage) warnings
 static void extended_hash(u8       *digest, u32 digest_size,
                           const u8 *input , u32 input_size)
 {

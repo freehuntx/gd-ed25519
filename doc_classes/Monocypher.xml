@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class name="Monocypher" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Symmetric primitives backed by Monocypher: XChaCha20-Poly1305 AEAD and BLAKE2b.
+	</brief_description>
+	<description>
+		Keyless / symmetric cryptographic primitives: XChaCha20-Poly1305 AEAD (libsodium / @noble/ciphers compatible, IETF-based) and unkeyed BLAKE2b. Named "Monocypher" to describe provenance and avoid colliding with Godot core's [code]Crypto[/code] class. Failure paths return null rather than an empty array so callers can distinguish an empty plaintext (a valid [PackedByteArray]) from a genuine error.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="aead_encrypt" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="key" type="PackedByteArray" />
+			<param index="1" name="nonce" type="PackedByteArray" />
+			<param index="2" name="plaintext" type="PackedByteArray" />
+			<param index="3" name="ad" type="PackedByteArray" default="PackedByteArray()" />
+			<description>
+				Encrypts [param plaintext] with XChaCha20-Poly1305 AEAD. [param key] must be 32 bytes, [param nonce] 24 bytes (XChaCha); [param ad] may be empty. Returns [code]ciphertext || tag(16)[/code] as a [PackedByteArray], or null (with an error) if the key/nonce sizes are wrong. This addon does not manage nonces - construct them yourself (e.g. zero-padding + counter).
+			</description>
+		</method>
+		<method name="aead_decrypt" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="key" type="PackedByteArray" />
+			<param index="1" name="nonce" type="PackedByteArray" />
+			<param index="2" name="ciphertext_with_tag" type="PackedByteArray" />
+			<param index="3" name="ad" type="PackedByteArray" default="PackedByteArray()" />
+			<description>
+				Decrypts [param ciphertext_with_tag] (ciphertext with the 16-byte tag appended) using XChaCha20-Poly1305 AEAD. Returns the plaintext as a [PackedByteArray] (possibly empty) on success, or null if authentication fails or input sizes are invalid. An empty plaintext is returned as an empty [PackedByteArray], which is distinct from the null failure value.
+			</description>
+		</method>
+		<method name="blake2b" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="data" type="PackedByteArray" />
+			<param index="1" name="out_len" type="int" default="32" />
+			<description>
+				Computes an unkeyed BLAKE2b digest of [param data] with output length [param out_len] bytes (1..64, default 32). Returns the digest as a [PackedByteArray], or null (with an error) if [param out_len] is out of range.
+			</description>
+		</method>
+	</methods>
+</class>

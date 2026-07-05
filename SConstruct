@@ -20,6 +20,12 @@ env = localEnv.Clone()
 env = SConscript("godot-cpp/SConstruct", { "env": env })
 env.Append(CPPPATH=["src"])
 
+# src/csprng.c uses BCryptGenRandom on Windows; link bcrypt for every
+# Windows toolchain (MSVC picks it up via #pragma comment(lib), but MinGW and
+# other non-MSVC compilers need it on the linker command line).
+if env["platform"] == "windows":
+    env.Append(LIBS=["bcrypt"])
+
 # Define the sources
 sources = Glob("src/*.cpp") + Glob("src/*.c")
 

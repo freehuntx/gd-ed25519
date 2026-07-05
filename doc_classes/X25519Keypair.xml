@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="X25519Keypair" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A container for a pure X25519 keypair.
+	</brief_description>
+	<description>
+		Holds a 32-byte X25519 private scalar and 32-byte public key. The private key is wiped from memory when the object is destroyed. Returned by [method X25519.generate_keypair].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_private_key" qualifiers="const">
+			<return type="PackedByteArray" />
+			<description>
+				Returns a copy of the 32-byte X25519 private scalar.
+			</description>
+		</method>
+		<method name="get_public_key" qualifiers="const">
+			<return type="PackedByteArray" />
+			<description>
+				Returns the 32-byte X25519 public key.
+			</description>
+		</method>
+	</methods>
+</class>

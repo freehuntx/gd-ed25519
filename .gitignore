@@ -34,3 +34,5 @@ desktop.ini
 *.swp
 *.swo
 *~
+.kilo
+.direnv

@@ -1,5 +1,5 @@
-#ifndef ed25519_H
-#define ed25519_H
+#ifndef GD_ED25519_CLASS_H
+#define GD_ED25519_CLASS_H
 
 #include "ed25519_keypair.h"
 
@@ -32,4 +32,4 @@ namespace godot
 
 } // namespace godot
 
-#endif // ed25519_H
+#endif // GD_ED25519_CLASS_H

@@ -189,6 +189,7 @@ jobs:
         run: |
           mkdir -p release/addons/ed25519
           cp -r artifacts/*/* release/addons/ed25519/ || true
+          cp LICENSE.md release/addons/ed25519/
           cp project/addons/ed25519/ed25519.gdextension release/addons/ed25519/
           cd release
           zip -r ed25519.zip addons/
@@ -228,6 +229,7 @@ jobs:
           cp project/addons/ed25519/ed25519.gdextension release_tmp/addons/ed25519/
           cp README.md release_tmp/
           cp LICENSE.md release_tmp/
+          cp LICENSE.md release_tmp/addons/ed25519/
           cp .gitignore release_tmp/
 
           # Add .gitattributes to ensure valid AssetLib structure in release branch

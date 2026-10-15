@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0](https://github.com/freehuntx/gd-ed25519/releases/tag/v1.1.0) - 2026-10-15
+
+### Added
+
+- Single-threaded Web builds (`threads=no`, `.nothreads.wasm`). Godot's default
+  Web export has thread support off and only loads extensions built that way;
+  before, the extension did not load there at all. The `.gdextension` now lists
+  both variants (`web.*.wasm32.nothreads` / `web.*.wasm32.threads`).
+- `THIRD_PARTY_LICENSES.md` (Monocypher, godot-cpp) is shipped in the addon
+  folder.
+
 ## [1.0.0](https://github.com/freehuntx/gd-ed25519/releases/tag/v1.0.0) - 2026-07-05
 
 ### Breaking changes
@@ -26,8 +37,8 @@
   argument is kept for source compatibility: pass an empty array to have it
   derived, or pass the 32-byte public key to have it checked - a mismatch now
   fails fast (empty signature + error) rather than silently producing a
-  signature. The signature output is unchanged for callers that pass the
-  correct public key or an empty one.
+  signature. The signature output is unchanged for callers that pass the correct
+  public key or an empty one.
 
 ### Added
 

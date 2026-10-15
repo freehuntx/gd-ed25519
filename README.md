@@ -62,7 +62,8 @@ scons platform=linux arch=x86_64 target=template_debug
 scons platform=windows arch=x86_64 target=template_debug
 # macOS
 scons platform=macos arch=universal target=template_debug
-# Web (WASM)
+# Web (WASM) - single-threaded (Godot's default Web export) and threaded
+scons platform=web arch=wasm32 target=template_debug threads=no
 scons platform=web arch=wasm32 target=template_debug
 ```
 

@@ -124,6 +124,18 @@ jobs:
             platform: web
             arch: wasm32
             target: template_release
+          # Godot's default Web export is single-threaded and only loads
+          # extensions built with threads=no (".nothreads" suffix).
+          - os: ubuntu-latest
+            platform: web
+            arch: wasm32
+            target: template_debug
+            threads: "no"
+          - os: ubuntu-latest
+            platform: web
+            arch: wasm32
+            target: template_release
+            threads: "no"
 
     steps:
       - uses: actions/checkout@v4
@@ -163,12 +175,12 @@ jobs:
             export CC=aarch64-linux-gnu-gcc
             export CXX=aarch64-linux-gnu-g++
           fi
-          scons platform=${{ matrix.platform }} target=${{ matrix.target }} arch=${{ matrix.arch }}
+          scons platform=${{ matrix.platform }} target=${{ matrix.target }} arch=${{ matrix.arch }} threads=${{ matrix.threads || 'yes' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ed25519-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.target }}
+          name: ed25519-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.target }}${{ matrix.threads == 'no' && '-nothreads' || '' }}
           path: project/addons/ed25519/
 
   release:
@@ -190,6 +202,7 @@ jobs:
           mkdir -p release/addons/ed25519
           cp -r artifacts/*/* release/addons/ed25519/ || true
           cp LICENSE.md release/addons/ed25519/
+          cp THIRD_PARTY_LICENSES.md release/addons/ed25519/
           cp project/addons/ed25519/ed25519.gdextension release/addons/ed25519/
           cd release
           zip -r ed25519.zip addons/
@@ -230,6 +243,7 @@ jobs:
           cp README.md release_tmp/
           cp LICENSE.md release_tmp/
           cp LICENSE.md release_tmp/addons/ed25519/
+          cp THIRD_PARTY_LICENSES.md release_tmp/addons/ed25519/
           cp .gitignore release_tmp/
 
           # Add .gitattributes to ensure valid AssetLib structure in release branch
